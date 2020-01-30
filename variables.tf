@@ -29,6 +29,7 @@ variable "admin_username" {
     description = "Admin username to lo"
 }
 
-variable "ssh_private_key_pem" {
-    
+variable "ssh_private_key_pem_secret_id" {
+    description = "(Optional) (Required for Linux os_platform) Map of keyvault_id and secret Id of the ssh_private_key_pem. The ssh_private_key_pem is base64encoded"
+    default = null
 }

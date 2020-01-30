@@ -1,13 +1,18 @@
+data "azurerm_key_vault_secret" "private_key_pem" {
+  name         = var.ssh_private_key_pem_secret_id.name
+  key_vault_id = var.ssh_private_key_pem_secret_id.key_vault_id
+}
+
 
 resource "null_resource" "linux_scripts_to_execute" {
-    count =  ( var.operating_system == "Linux" && length(var.scripts) > 0 ) ? length(var.scripts) : 0
+    count =  ( lower(var.operating_system) == "linux" && length(var.scripts) > 0 ) ? length(var.scripts) : 0
 
     # TODO - to be refactored to external module to support bastion and also windows.
     connection {
         type        = "ssh"
         user        = var.admin_username
         host        = var.host_connection
-        private_key = base64decode(var.ssh_private_key_pem)
+        private_key = base64decode(data.azurerm_key_vault_secret.private_key_pem.value)
         agent       = false 
     }
 
