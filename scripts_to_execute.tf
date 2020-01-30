@@ -3,6 +3,10 @@ data "azurerm_key_vault_secret" "private_key_pem" {
   key_vault_id = var.ssh_private_key_pem_secret_id.key_vault_id
 }
 
+locals {
+    private_key = base64decode(data.azurerm_key_vault_secret.private_key_pem.value)
+}
+
 
 resource "null_resource" "linux_scripts_to_execute" {
     count =  ( lower(var.operating_system) == "linux" && length(var.scripts) > 0 ) ? length(var.scripts) : 0
@@ -12,7 +16,7 @@ resource "null_resource" "linux_scripts_to_execute" {
         type        = "ssh"
         user        = var.admin_username
         host        = var.host_connection
-        private_key = base64decode(data.azurerm_key_vault_secret.private_key_pem.value)
+        private_key = local.private_key
         agent       = false 
     }
 
